@@ -2,166 +2,124 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>קונטרס תפילות מקצועי - A5</title>
+    <title>קונטרס תפילות - תיקון תמונות</title>
     <link href="https://fonts.googleapis.com/css2?family=Bona+Nova+SC:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --primary-font: 'Bona Nova SC', serif; }
         
-        /* הגדרות בסיס למסך */
-        body { font-family: var(--primary-font); background-color: #555; margin: 0; padding: 20px; }
-        .no-print { 
-            background: white; padding: 25px; border-radius: 12px; 
-            max-width: 500px; margin: 0 auto 40px auto; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3); text-align: center;
+        /* פקודות קריטיות להדפסת צבעים ורקעים */
+        * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
         }
 
-        /* הגדרות הדפסה קריטיות */
+        body { font-family: var(--primary-font); background-color: #555; margin: 0; padding: 20px; }
+
         @media print {
-            @page { 
-                size: A5; 
-                margin: 0; /* מעלים כותרות דפדפן */
-            }
+            @page { size: A5; margin: 0; }
             body { background: white; padding: 0; margin: 0; }
             .no-print { display: none; }
-            .page-container { margin: 0 !important; border: none !important; box-shadow: none !important; }
         }
 
-        /* מבנה עמוד A5 */
         .page-container {
             background: white;
             width: 148.5mm;
-            min-height: 210mm;
+            height: 210mm;
             margin: 10px auto;
             position: relative;
-            box-sizing: border-box;
             page-break-after: always;
             overflow: hidden;
-            border: 1px solid #ddd; /* תצוגה במסך בלבד */
         }
 
-        /* מסגרות */
+        /* שכבת המסגרת - משתמשים בתמונה ממשית במקום רקע */
         .frame-layer {
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             z-index: 1;
-            background-repeat: no-repeat;
-            background-size: 100% 100%;
-            pointer-events: none;
         }
-        .cover .frame-layer { background-image: url('1.png'); }
-        .content-page .frame-layer { background-image: url('2.png'); }
+        .frame-layer img {
+            width: 100%; height: 100%;
+            display: block;
+        }
 
-        /* תוכן */
         .content-wrapper {
             position: relative;
-            z-index: 2;
-            padding: 22mm 18mm; /* שוליים פנימיים למניעת עליה על המסגרת */
+            z-index: 2; /* מעל התמונה */
+            padding: 25mm 20mm;
             height: 100%;
-            display: flex;
-            flex-direction: column;
+            box-sizing: border-box;
             text-align: center;
         }
 
         /* סימני חיתוך (Crop Marks) */
         .crop-mark {
-            position: absolute;
-            width: 10mm; height: 10mm;
-            border: 0.2pt solid #aaa;
-            z-index: 5;
+            position: absolute; width: 8mm; height: 8mm;
+            border: 0.5pt solid rgba(0,0,0,0.3); z-index: 5;
         }
         .cm-tl { top: 0; left: 0; border-right: none; border-bottom: none; }
         .cm-tr { top: 0; right: 0; border-left: none; border-bottom: none; }
         .cm-bl { bottom: 0; left: 0; border-right: none; border-top: none; }
         .cm-br { bottom: 0; right: 0; border-left: none; border-top: none; }
 
-        /* עיצוב טקסט */
-        .cover-title { font-size: 28pt; font-weight: bold; margin-top: 35mm; }
-        .name-main { font-size: 36pt; font-weight: bold; margin: 15px 0; line-height: 1.2; }
-        .family-name { font-size: 24pt; }
-        .zl { font-size: 38pt; margin-top: 10mm; }
+        .name-main { font-size: 36pt; font-weight: bold; margin-top: 10mm; }
+        .text-flow { font-size: 16pt; line-height: 1.6; text-align: justify; }
 
-        .section-header { font-size: 24pt; font-weight: bold; margin-bottom: 5mm; border-bottom: 1px solid #000; display: inline-block; }
-        .text-flow { font-size: 15.5pt; line-height: 1.5; text-align: justify; }
-        .letter-tag { font-weight: bold; font-size: 18pt; color: #2c3e50; display: block; margin-top: 10px; }
-
-        label { display: block; text-align: right; font-weight: bold; margin-top: 10px; }
-        input, select { width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ccc; font-family: var(--primary-font); }
-        button { background: #2c3e50; color: white; padding: 15px; border: none; width: 100%; cursor: pointer; font-size: 1.2rem; margin-top: 20px; border-radius: 5px; }
-        
+        .no-print { background: white; padding: 20px; text-align: center; max-width: 400px; margin: auto; border-radius: 10px; }
+        input { width: 90%; padding: 10px; margin: 5px; }
+        button { padding: 15px 30px; cursor: pointer; background: #2c3e50; color: white; border: none; font-size: 1.1rem; }
     </style>
 </head>
 <body>
 
     <div class="no-print">
-        <h2>מחולל קונטרס מקצועי</h2>
-        <label>שם הנפטר/ת:</label>
-        <input type="text" id="deadName" placeholder="ישראל">
-        <label>שם האב:</label>
-        <input type="text" id="fatherName" placeholder="יצחק">
-        <label>שם משפחה:</label>
-        <input type="text" id="familyName" placeholder="ישראלי">
-        <label>מין:</label>
-        <select id="relation"><option value="בן">בן</option><option value="בת">בת</option></select>
-        <button onclick="generateDoc()">הורד / הדפס קונטרס</button>
+        <h3>הגדרות קונטרס</h3>
+        <input type="text" id="deadName" placeholder="שם הנפטר/ת">
+        <input type="text" id="fatherName" placeholder="שם האב">
+        <button onclick="generate()">הפק קונטרס להדפסה</button>
+        <p style="font-size: 0.8rem; color: red;">* וודא שהקבצים 1.png ו-2.png נמצאים באותה תיקיה</p>
     </div>
 
-    <div id="print-area"></div>
+    <div id="output"></div>
 
     <script>
-        // בסיס טקסטים מקוצר (יש להעתיק את כל הטקסטים מהתשובה הקודמת לכאן)
-        const tehillimData = {
-            'א': 'אַשְׁרֵי תְמִימֵי דָרֶךְ הַהֹלְכִים... (יש להשלים)', 
-            // ... כאן להדביק את כל האותיות מהקוד הקודם ...
-        };
-
-        function createPage(type = 'content') {
-            const page = document.createElement('div');
-            page.className = `page-container ${type === 'cover' ? 'cover' : 'content-page'}`;
-            page.innerHTML = `
-                <div class="crop-mark cm-tl"></div><div class="crop-mark cm-tr"></div>
-                <div class="crop-mark cm-bl"></div><div class="crop-mark cm-br"></div>
-                <div class="frame-layer"></div>
-                <div class="content-wrapper"></div>
-            `;
-            return page;
-        }
-
-        function generateDoc() {
+        function generate() {
             const name = document.getElementById('deadName').value;
             const father = document.getElementById('fatherName').value;
-            const family = document.getElementById('familyName').value;
-            const relation = document.getElementById('relation').value;
-            const printArea = document.getElementById('print-area');
-            printArea.innerHTML = '';
+            const output = document.getElementById('output');
+            output.innerHTML = '';
 
-            // עמוד 1: שער
-            const coverPage = createPage('cover');
-            coverPage.querySelector('.content-wrapper').innerHTML = `
-                <div class="cover-title">תפילות ומשניות</div>
-                <div style="font-size:18pt; margin-top:5mm;">לעילוי נשמת היקר באדם</div>
-                <div class="name-main">${name} ${relation} ${father}</div>
-                <div class="family-name">${family}</div>
-                <div class="zl">ז"ל</div>
+            // עמוד שער
+            output.innerHTML += `
+                <div class="page-container">
+                    <div class="crop-mark cm-tl"></div><div class="crop-mark cm-tr"></div>
+                    <div class="crop-mark cm-bl"></div><div class="crop-mark cm-br"></div>
+                    <div class="frame-layer"><img src="1.png" alt="שער"></div>
+                    <div class="content-wrapper">
+                        <div style="font-size: 25pt; margin-top: 40mm;">לעילוי נשמת</div>
+                        <div class="name-main">${name} בן ${father}</div>
+                        <div style="font-size: 40pt; margin-top: 10mm;">ז"ל</div>
+                    </div>
+                </div>
             `;
-            printArea.appendChild(coverPage);
 
-            // יצירת תוכן התהילים
-            let allTehillimHtml = `<div class="section-header">תהילים - פרק קי"ט</div><div class="text-flow">`;
-            name.split('').forEach(l => {
-                if(tehillimData[l]) allTehillimHtml += `<span class="letter-tag">אות ${l}</span>${tehillimData[l]}<br>`;
-            });
-            allTehillimHtml += `</div>`;
+            // עמוד תוכן לדוגמה
+            output.innerHTML += `
+                <div class="page-container">
+                    <div class="crop-mark cm-tl"></div><div class="crop-mark cm-tr"></div>
+                    <div class="crop-mark cm-bl"></div><div class="crop-mark cm-br"></div>
+                    <div class="frame-layer"><img src="2.png" alt="רקע"></div>
+                    <div class="content-wrapper">
+                        <div style="font-size: 22pt; font-weight: bold; margin-bottom: 5mm;">תהילים ק"יט</div>
+                        <div class="text-flow">
+                            כאן יבוא הטקסט של התהילים...
+                        </div>
+                    </div>
+                </div>
+            `;
 
-            // הזרמת תוכן - פתרון לזרימה רציפה
-            // בשיטה מקצועית היינו מודדים גובה, כאן נשתמש ב-CSS שיודע לשבור עמודים בתוך ה-wrapper
-            const contentPage = createPage('content');
-            contentPage.querySelector('.content-wrapper').innerHTML = allTehillimHtml;
-            printArea.appendChild(contentPage);
-
-            // הוספת משניות וקדיש (באותו אופן)
-            // ...
-            
-            setTimeout(() => window.print(), 500);
+            setTimeout(() => { window.print(); }, 500);
         }
     </script>
 </body>

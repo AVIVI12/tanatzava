@@ -3,89 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מחולל קונטרס תפילות - Live Preview</title>
+    <title>מחולל קונטרס - הדפסה נקייה</title>
     <link href="https://fonts.googleapis.com/css2?family=Bona+Nova+SC:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #2c3e50;
             --accent: #d4af37;
-            --bg: #f8f9fa;
             --font: 'Bona Nova SC', serif;
         }
 
-        /* הגדרות הדפסה קריטיות - פותר את הבעיה בכרום */
+        /* --- הגדרות הדפסה (פותר את בעיית הסרגלים והחיתוכים) --- */
         @media print {
-            @page { size: A5; margin: 0; }
-            body { margin: 0; padding: 0; background: white; }
-            .ui-container { display: none !important; }
+            @page { 
+                size: A5; 
+                margin: 0; /* מעלים כותרות דפדפן */
+            }
+            html, body { 
+                height: auto !important; 
+                overflow: visible !important; 
+                margin: 0 !important; 
+                padding: 0 !important;
+                background: white !important;
+            }
+            .ui-container { display: none !important; } /* מסתיר את התפריט */
+            .preview-container { 
+                position: static !important;
+                display: block !important;
+                overflow: visible !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                background: white !important;
+                height: auto !important;
+                width: 100% !important;
+            }
             .print-page { 
                 margin: 0 !important; 
                 box-shadow: none !important; 
-                page-break-after: always;
+                border: none !important;
+                page-break-after: always !important;
+                page-break-inside: avoid !important;
+                display: block !important;
+                position: relative !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
         }
 
-        /* עיצוב הממשק (UI) */
-        body { font-family: var(--font); background: var(--bg); margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        /* --- עיצוב ממשק המשתמש (באתר) --- */
+        body { font-family: var(--font); background: #f0f0f0; margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
         .ui-container {
-            width: 400px; background: white; padding: 25px; box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-            overflow-y: auto; z-index: 100;
+            width: 380px; background: white; padding: 20px; box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            overflow-y: auto; z-index: 100; flex-shrink: 0;
         }
 
         .preview-container {
-            flex: 1; overflow-y: auto; padding: 40px; display: flex; flex-direction: column; align-items: center; background: #525659;
+            flex: 1; overflow-y: auto; padding: 40px; display: flex; flex-direction: column; 
+            align-items: center; background: #525659; scroll-behavior: smooth;
         }
 
-        h2 { color: var(--primary); border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+        h2 { color: var(--primary); border-bottom: 2px solid var(--accent); padding-bottom: 8px; font-size: 1.5rem; }
         .form-group { margin-bottom: 15px; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; color: #444; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.9rem; }
         input, select { 
-            width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; 
-            font-family: var(--font); font-size: 1rem; box-sizing: border-box;
+            width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; 
+            font-family: var(--font); box-sizing: border-box;
         }
         
-        button.print-btn {
+        .btn-main {
             width: 100%; padding: 15px; background: var(--primary); color: white;
-            border: none; border-radius: 6px; font-size: 1.2rem; cursor: pointer; margin-top: 20px;
+            border: none; border-radius: 4px; font-size: 1.1rem; cursor: pointer; margin-top: 10px;
         }
-        button.print-btn:hover { background: #1a252f; }
 
-        /* עיצוב הדף המודפס (A5) */
+        /* --- מבנה העמוד להדפסה --- */
         .print-page {
             width: 148.5mm; height: 210mm; background: white; position: relative;
-            margin-bottom: 20px; box-shadow: 0 0 20px rgba(0,0,0,0.4);
+            margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             flex-shrink: 0; overflow: hidden;
         }
 
         .frame-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
-        .content { position: relative; z-index: 2; padding: 25mm 18mm; height: 100%; box-sizing: border-box; text-align: center; }
+        .content { 
+            position: relative; z-index: 2; padding: 25mm 18mm; height: 100%; 
+            box-sizing: border-box; text-align: center; display: flex; flex-direction: column;
+        }
 
-        /* סגנונות טקסט בתוך הקונטרס */
-        .title-lg { font-size: 32pt; font-weight: bold; margin-top: 30mm; }
-        .name-lg { font-size: 38pt; font-weight: bold; margin: 15mm 0; line-height: 1.1; }
-        .zl { font-size: 45pt; color: #333; }
-        .section-title { font-size: 24pt; font-weight: bold; margin-bottom: 10mm; text-decoration: underline; }
-        .text-body { font-size: 15pt; line-height: 1.5; text-align: justify; white-space: pre-wrap; }
-        .letter-header { font-weight: bold; font-size: 18pt; display: block; margin-top: 15px; border-top: 1px solid #eee; }
-
-        /* סימני חיתוך */
-        .crop { position: absolute; width: 10mm; height: 10mm; border: 0.2pt solid #ccc; z-index: 5; }
-        .tl { top: 0; left: 0; border-right: none; border-bottom: none; }
-        .tr { top: 0; right: 0; border-left: none; border-bottom: none; }
-        .bl { bottom: 0; left: 0; border-right: none; border-top: none; }
-        .br { bottom: 0; right: 0; border-left: none; border-top: none; }
+        /* סגנונות טקסט */
+        .cover-title { font-size: 30pt; font-weight: bold; margin-top: 30mm; line-height: 1; }
+        .name-display { font-size: 38pt; font-weight: bold; margin: 15mm 0; line-height: 1.1; word-wrap: break-word; }
+        .zl-text { font-size: 45pt; font-weight: normal; }
+        .section-header { font-size: 24pt; font-weight: bold; margin-bottom: 8mm; text-decoration: underline; }
+        .holy-text { font-size: 15.5pt; line-height: 1.5; text-align: justify; white-space: pre-wrap; }
+        .letter-tag { font-weight: bold; font-size: 19pt; display: block; margin-top: 12px; margin-bottom: 4px; color: #111; }
     </style>
 </head>
 <body>
 
 <div class="ui-container">
-    <h2>הגדרות קונטרס</h2>
+    <h2>עריכת קונטרס</h2>
     
     <div class="form-group">
-        <label>שם הנפטר/ת:</label>
+        <label>שם פרטי (הנפטר/ת):</label>
         <input type="text" id="inName" value="אברהם" oninput="update()">
     </div>
     
@@ -102,32 +120,34 @@
     <div class="form-group">
         <label>מין:</label>
         <select id="inGender" onchange="update()">
-            <option value="זכר">זכר (בן)</option>
-            <option value="נקבה">נקבה (בת)</option>
+            <option value="בן">בן (זכר)</option>
+            <option value="בת">בת (נקבה)</option>
         </select>
     </div>
 
     <div class="form-group">
-        <label>נוסח:</label>
+        <label>נוסח קדיש:</label>
         <select id="inNusach" onchange="update()">
             <option value="edot">עדות המזרח</option>
             <option value="ashkenaz">אשכנז / ספרד</option>
         </select>
     </div>
 
-    <button class="print-btn" onclick="window.print()">הדפס קונטרס מוכן (A5)</button>
-    
-    <div style="margin-top: 30px; font-size: 0.9rem; color: #666;">
-        <p>💡 <b>טיפ להדפסה:</b> בחלון ההדפסה של כרום, וודאו שמרג'ינס (Margins) על "None" וסמנו "Background Graphics".</p>
-    </div>
+    <button class="btn-main" onclick="window.print()">הדפס / שמור כ-PDF</button>
+    <p style="font-size: 0.8rem; line-height:1.3; color: #555;">
+        <b>הוראות להדפסה מושלמת:</b><br>
+        1. בחלונית שתפתח, בחרו "שמור כ-PDF" או את המדפסת שלכם.<br>
+        2. תחת "שוליים" (Margins) - בחרו <b>"ללא" (None)</b>.<br>
+        3. וודאו ש"גרפיקת רקע" מסומן ב-V.
+    </p>
 </div>
 
 <div class="preview-container" id="preview">
-    <!-- העמודים ייווצרו כאן דינמית -->
+    <!-- עמודים יווצרו כאן -->
 </div>
 
 <script>
-    // מאגר טקסטים
+    // מאגר טקסטים - לדוגמה (ניתן להשלים את כל הפרק)
     const DATA = {
         tehillim: {
             'א': 'אַשְׁרֵי תְמִימֵי דָרֶךְ הַהֹלְכִים בְּתוֹרַת יְהוָה: אַשְׁרֵי נֹצְרֵי עֵדֹתָיו בְּכָל לֵב יִדְרְשׁוּהוּ: אַף לֹא פָעֲלוּ עַוְלָה בִּדְרָכָיו הָלָכוּ...',
@@ -137,27 +157,24 @@
             'נ': 'נֵר לְרַגְלִי דְבָרֶךָ וְאֹור לִנְתִיבָתִי: נִשְׁבַּעְתִּי וָאֲקַיֵּמָה לִשְׁמֹר מִשְׁפְּטֵי צִדְקֶךָ...',
             'ר': 'רְאֵה עָנְיִי וְחַלְּצֵנִי כִּי תֹורָתְךָ לֹא שָׁכָחְתִּי: רִיבָה רִיבִי וּגְאָלֵנִי...',
             'ש': 'שָׂרִים רְדָפוּנִי חִנָּם וּמִדְּבָרֶיךָ פָּחַד לִבִּי: שָׂשׂ אָנֹכִי עַל אִמְרָתֶךָ...',
-            // הערה: כאן יש להוסיף את כל שאר ה-א"ב לפי הצורך
         },
         mishnayot: {
-            'נ': 'נִדָּה שֶׁהוֹצִיאָה דָם, בֵּית שַׁמַּאי אוֹמְרִים: צְרִיכָה דְבֵילָה...',
+            'נ': 'נָשִׁים, עֲבָדִים וּקְטַנִּים, פְּטוּרִים מִקְּרִיאַת שְׁמַע וּמִן הַתְּפִלִּין...',
             'ש': 'שְׁנַיִם אֹוחֲזִין בְּטַלִּית, זֶה אֹומֵר אֲנִי מְצָאתִיהָ וְזֶה אֹומֵר אֲנִי מְצָאתִיהָ...',
-            'מ': 'מֵאֵימָתַי קוֹרִין אֶת שְׁמַע בְּעַרְבִית? מִשָּׁעָה שֶׁהַכֹּהֲנִים נִכְנָסִים לֶאֱכֹל בִּתְרוּמָתָן...',
-            'ה': 'הַמַּנִּיחַ אֶת הַכַּד בִּרְשׁוּת הָרַבִּים וּבָא אַחֵר וְנִתְקַל בָּהּ וּשְׁבָרָהּ, פָּטוּר...'
+            'מ': 'מֵאֵימָתַי קוֹרִין אֶת שְׁמַע בְּעַרְבִית? מִשָּׁעָה שֶׁהַכֹּהֲנִים נִכְנָסִים...',
+            'ה': 'הַמַּנִּיחַ אֶת הַכַּד בִּרְשׁוּת הָרַבִּים וּבא אַחֵר וְנִתְקַל בָּהּ...'
         },
         kaddish: {
-            edot: "יִתְגַּדַּל וְיִתְקַדַּשׁ שְׁמֵהּ רַבָּא. (אָמֵן)\nבְּעָלְמָא דִּי בְרָא כִרְעוּתֵהּ, וְיַמְלִיךְ מַלְכוּתֵהּ...\n(נוסח עדות המזרח המלא כאן)",
-            ashkenaz: "יִתְגַּדַּל וְיִתְקַדַּשׁ שְׁמֵהּ רַבָּא...\n(נוסח אשכנז המלא כאן)"
+            edot: "יִתְגַּדַּל וְיִתְקַדַּשׁ שְׁמֵהּ רַבָּא. (אָמֵן)\nבְּעָלְמָא דִּי בְרָא כִרְעוּתֵהּ, וְיַמְלִיךְ מַלְכוּתֵהּ, וְיַצְמַח פֻּרְקָנֵהּ וִיקָרֵב מְשִׁיחֵהּ. בְּחַיֵּיכוֹן וּבְיוֹמֵיכוֹן וּבְחַיֵּי דְכָל בֵּית יִשְׂרָאֵל, בַּעֲגָלָא וּבִזְמַן קָרִיב, וְאִמְרוּ אָמֵן. יְהֵא שְׁמֵהּ רַבָּא מְבָרַךְ לְעָלַם וּלְעָלְמֵי עָלְמַיָּא. יִתְבָּרַךְ וְיִשְׁתַּבַּח וְיִתְפָּאַר וְיִתְרוֹמַם וְיִתְנַשֵּׂא וְיִתְהַדַּר וְיִתְעַלֶּה וְיִתְהַלַּל שְׁמֵהּ דְּקֻדְשָׁא בְּרִיךְ הוּא...",
+            ashkenaz: "יִתְגַּדַּל וְיִתְקַדַּשׁ שְׁמֵהּ רַבָּא...\n(טקסט אשכנז המלא כאן)"
         }
     };
 
-    function createPageElement(isCover) {
+    function createPage(isCover) {
         const div = document.createElement('div');
         div.className = 'print-page';
         div.innerHTML = `
-            <div class="crop tl"></div><div class="crop tr"></div>
-            <div class="crop bl"></div><div class="crop br"></div>
-            <img class="frame-img" src="${isCover ? '1.png' : '2.png'}" onerror="this.style.display='none'">
+            <img class="frame-img" src="${isCover ? '1.png' : '2.png'}" onerror="this.style.opacity='0'">
             <div class="content"></div>
         `;
         return div;
@@ -173,45 +190,45 @@
         
         preview.innerHTML = '';
 
-        // עמוד 1: שער
-        const cover = createPageElement(true);
-        cover.querySelector('.content').innerHTML = `
-            <div class="title-lg">תפילות לעילוי נשמת</div>
-            <div class="name-lg">${name} ${gender === 'זכר' ? 'בן' : 'בת'} ${father}<br>${family}</div>
-            <div class="zl">ז"ל</div>
+        // --- עמוד 1: שער ---
+        const page1 = createPage(true);
+        page1.querySelector('.content').innerHTML = `
+            <div class="cover-title">קונטרס תפילות</div>
+            <div style="font-size: 18pt; margin-top:5mm;">לעילוי נשמת</div>
+            <div class="name-display">${name} ${gender} ${father}<br>${family}</div>
+            <div class="zl-text">ת.נ.צ.ב.ה</div>
         `;
-        preview.appendChild(cover);
+        preview.appendChild(page1);
 
-        // עמוד 2: תהילים
-        const p2 = createPageElement(false);
-        let tehillimHtml = `<div class="section-title">תהילים - אותיות השם</div><div class="text-body">`;
+        // --- עמוד 2: תהילים (אותיות השם) ---
+        const page2 = createPage(false);
+        let tehillimBody = `<div class="section-header">תהילים (פרק קי"ט)</div><div class="holy-text">`;
         name.split('').forEach(l => {
-            if(DATA.tehillim[l]) tehillimHtml += `<span class="letter-header">אות ${l}</span>${DATA.tehillim[l]}`;
+            if(DATA.tehillim[l]) tehillimBody += `<span class="letter-tag">אות ${l}</span>${DATA.tehillim[l]}\n`;
         });
-        tehillimHtml += `</div>`;
-        p2.querySelector('.content').innerHTML = tehillimHtml;
-        preview.appendChild(p2);
+        tehillimBody += `</div>`;
+        page2.querySelector('.content').innerHTML = tehillimBody;
+        preview.appendChild(page2);
 
-        // עמוד 3: משניות נשמ"ה
-        const p3 = createPageElement(false);
-        let mishnaHtml = `<div class="section-title">משניות - נְשָׁמָה</div><div class="text-body">`;
+        // --- עמוד 3: משניות (נשמה) ---
+        const page3 = createPage(false);
+        let mishnaBody = `<div class="section-header">משניות (נְשָׁמָה)</div><div class="holy-text">`;
         ['נ','ש','מ','ה'].forEach(l => {
-            mishnaHtml += `<span class="letter-header">אות ${l}</span>${DATA.mishnayot[l] || 'טקסט משנה...'}`;
+            if(DATA.mishnayot[l]) mishnaBody += `<span class="letter-tag">אות ${l}</span>${DATA.mishnayot[l]}\n`;
         });
-        mishnaHtml += `</div>`;
-        p3.querySelector('.content').innerHTML = mishnaHtml;
-        preview.appendChild(p3);
+        mishnaBody += `</div>`;
+        page3.querySelector('.content').innerHTML = mishnaBody;
+        preview.appendChild(page3);
 
-        // עמוד 4: קדיש
-        const p4 = createPageElement(false);
-        p4.querySelector('.content').innerHTML = `
-            <div class="section-title">קדיש דרבנן</div>
-            <div class="text-body" style="text-align:center; font-size:13pt;">${DATA.kaddish[nusach]}</div>
+        // --- עמוד 4: קדיש ---
+        const page4 = createPage(false);
+        page4.querySelector('.content').innerHTML = `
+            <div class="section-header">קדיש דרבנן</div>
+            <div class="holy-text" style="font-size:13pt; text-align:center;">${DATA.kaddish[nusach]}</div>
         `;
-        preview.appendChild(p4);
+        preview.appendChild(page4);
     }
 
-    // הפעלה ראשונית
     window.onload = update;
 </script>
 
